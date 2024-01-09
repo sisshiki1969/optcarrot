@@ -13,13 +13,15 @@
 
 # Generate benchmark chart
 
+    $ pip install numpy pandas matplotlib
+
     $ rm -rf benchmark
     $ ruby tools/run-benchmark.rb all -m all
-    $ cp benchmark/*-oneshot.csv oneshot.csv
+    $ cp benchmark/*-oneshot-180.csv oneshot.csv
 
     $ rm -rf benchmark
     $ ruby tools/run-benchmark.rb ruby27mjit,ruby27,ruby20,truffleruby,jruby,topaz -h 1 -c 10
-    $ cp benchmark/*-elapsed-time.csv elapsed-time.csv
+    $ cp benchmark/*-elapsed-time-180.csv elapsed-time.csv
 
     $ rm -rf benchmark
     $ ruby tools/run-benchmark.rb ruby27mjit,ruby27,ruby20,truffleruby,jruby,topaz -h 3000

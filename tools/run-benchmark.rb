@@ -165,43 +165,26 @@ MASTER_APT = %w(
   libgdbm-dev libdb-dev git ruby
 )
 
-class MasterMJIT < DockerImage
-  FROM = "ubuntu:20.04"
-  APT = MASTER_APT
-  RUN = [
-    "git clone --depth 1 https://github.com/ruby/ruby.git",
-    "cd ruby && autoconf",
-    "cd ruby && ./configure --prefix=`pwd`/local",
-    "cd ruby && make && make install",
-  ]
-  RUBY = "ruby/ruby --jit -Iruby"
-end
-
-class Ruby30MJIT < DockerImage
-  FROM = "rubylang/ruby:3.0-focal"
-  RUBY = "ruby --jit"
-end
-
-class Ruby27MJIT < DockerImage
-  FROM = "ruby:2.7"
-  RUBY = "ruby --jit"
-end
-
-class Ruby26MJIT < DockerImage
-  FROM = "ruby:2.6"
-  RUBY = "ruby --jit"
-end
-
 class MasterYJIT < DockerImage
-  FROM = "ubuntu:20.04"
+  FROM = "rust:latest"
   APT = MASTER_APT
   RUN = [
     "git clone --depth 1 https://github.com/ruby/ruby.git",
-    "cd ruby && autoconf",
+    "cd ruby && ./autogen.sh",
     "cd ruby && ./configure --prefix=`pwd`/local",
     "cd ruby && make && make install",
   ]
   RUBY = "ruby/ruby --yjit -Iruby"
+end
+
+class Ruby33YJIT < DockerImage
+  FROM = "ruby:3.3"
+  RUBY = "ruby --yjit -Iruby"
+end
+
+class Ruby32YJIT < DockerImage
+  FROM = "ruby:3.2"
+  RUBY = "ruby --yjit -Iruby"
 end
 
 class Master < DockerImage
@@ -214,6 +197,14 @@ class Master < DockerImage
     "cd ruby && make && make install",
   ]
   RUBY = "ruby/ruby -Iruby"
+end
+
+class Ruby33 < DockerImage
+  FROM = "ruby:3.3"
+end
+
+class Ruby32 < DockerImage
+  FROM = "ruby:3.2"
 end
 
 class Ruby30 < DockerImage
@@ -324,14 +315,15 @@ end
 #         "artichoke/target/release/artichoke bin/optcarrot --benchmark $OPTIONS"
 # end
 
-class RuRuby < DockerImage
+class Monoruby < DockerImage
   FROM = "rustlang/rust:nightly-buster"
   RUN = [
-    "git clone --depth 1 https://github.com/sisshiki1969/ruruby.git",
-    "cd ruruby && cargo build --release",
+    "git clone --depth 1 https://github.com/sisshiki1969/monoruby.git",
+    "cd monoruby && cargo install --path monoruby",
   ]
-  CMD = "git -C ruruby/ rev-parse HEAD && ruruby/target/release/ruruby bin/optcarrot --benchmark $OPTIONS"
+  CMD = "git -C monoruby/ rev-parse HEAD && monoruby bin/optcarrot --benchmark $OPTIONS"
 end
+
 
 ###############################################################################
 
@@ -349,7 +341,7 @@ class CLI
     o.on("-c NUM", Integer, "iteration count") {|v| @count = v }
     o.on("-r FILE", String, "rom file") {|v| @romfile = v }
     o.on("-f FRAME", Integer, "target frame") {|v| @target_frame = v }
-    o.on("-h", Integer, "fps history mode") {|v| @history = v }
+    o.on("-h HISTORY", Integer, "fps history mode") {|v| @history = v }
     o.separator("")
     o.separator("Examples:")
     latest = DockerImage::IMAGES.find {|n| !n.tag.start_with?("master") && !n.tag.include?("mjit") }.tag
