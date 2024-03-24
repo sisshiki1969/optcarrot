@@ -259,10 +259,11 @@ class Ruby187 < DockerImage
 end
 
 class TruffleRuby < DockerImage
-  URL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/graalvm-ce-java8-linux-amd64-20.1.0.tar.gz"
-  FROM = "buildpack-deps:focal"
-  RUN = ["cd graalvm-* && bin/gu install ruby"]
-  RUBY = "graalvm-*/bin/ruby --jvm"
+  #URL = "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/graalvm-ce-java8-linux-amd64-20.1.0.tar.gz"
+  #FROM = "buildpack-deps:focal"
+  FROM = "ghcr.io/flavorjones/truffleruby:latest"
+  #RUN = ["cd graalvm-* && bin/gu install ruby"]
+  #RUBY = "graalvm-*/bin/ruby --jvm"
   SUPPORTED_MODE = %w(default)
 end
 
